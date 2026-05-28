@@ -143,7 +143,8 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
 4. UNITS: Fusion 360 API internal units are ALWAYS Centimeters (cm) and Radians. If a user asks for millimeters (mm), you MUST divide by 10.
 5. CUT OPERATIONS: When using `CutFeatureOperation`, ensure the sketch plane and extrusion extent actually intersect a solid body. "No target body found to cut or intersect" means your geometry math is wrong and missed the body.
 6. OBJECT COLLECTIONS: Always use `adsk.core.ObjectCollection.create()` when passing multiple profiles or bodies into a feature operation.
-7. ROBUSTNESS: Keep your parametric math simple. If creating complex profiles like involute gears, prefer standard extrusions and circular patterns over complex loft/sweep operations which are prone to topological failures.
+7. EXTRUSION EXTENTS: When using `setDistanceExtent()` on an extrude input, it ALWAYS requires two arguments: a boolean for symmetry, and the ValueInput distance (e.g. `ext_input.setDistanceExtent(False, adsk.core.ValueInput.createByReal(thickness))`).
+8. ROBUSTNESS: Keep your parametric math simple. If creating complex profiles like involute gears, prefer standard extrusions and circular patterns over complex loft/sweep operations which are prone to topological failures.
 """
             user_parts = []
             

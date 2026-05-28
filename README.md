@@ -4,6 +4,10 @@ CADAI is a highly tailored, standalone desktop AI assistant specifically designe
 
 ![CADAI Interface](assets/screenshot.png)
 
+## Watch it in action
+
+<video src="assets/CADAI_DEMO.mov" width="800" controls="controls" muted="muted" autoplay="autoplay"></video>
+
 ## Features
 
 - **Fusion 360 Script Auto-Sync**: The app seamlessly connects your AI chat sessions to a Fusion 360 Python script location of your choice. Any code generated in the active session can be synced to Fusion 360 with a single click, allowing instant iteration and testing.
