@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="dark" lang="en" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>CADAI Intelligence Interface</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2a2a2a",
+                        "primary-container": "#e2e2e2",
+                        "on-surface-variant": "#c4c7c8",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#393939",
+                        "surface-container-highest": "#353535",
+                        "secondary": "#ecffe3",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#002203",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#00530e",
+                        "primary": "#ffffff",
+                        "tertiary": "#ffffff",
+                        "on-secondary-container": "#007117",
+                        "tertiary-container": "#ffdad5",
+                        "on-primary": "#2f3131",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error": "#690005",
+                        "on-secondary": "#003907",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#303030",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#410001",
+                        "secondary-fixed-dim": "#00e639",
+                        "outline-variant": "#444748",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed": "#ffdad5",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "surface": "#131313",
+                        "secondary-container": "#13ff43",
+                        "surface-tint": "#c6c6c7",
+                        "outline": "#8e9192",
+                        "on-primary-container": "#636565",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed": "#e2e2e2",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#ca0a0f",
+                        "background": "#000000",
+                        "surface-variant": "#353535",
+                        "inverse-primary": "#5d5f5f",
+                        "on-tertiary": "#690003",
+                        "secondary-fixed": "#72ff70"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-md": "24px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "panel-width-fixed": "320px",
+                        "margin-sm": "12px",
+                        "margin-lg": "40px"
+                    },
+                    "fontFamily": {
+                        "data-sm": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .thinking-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #ffffff 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: moveLine 2s infinite linear;
+            opacity: 0.8;
+        }
+
+        @keyframes moveLine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .etched-border {
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-primary font-body-md overflow-hidden h-screen flex">
+    <!-- History Sidebar -->
+    <aside class="w-[280px] h-full flex flex-col bg-black/3 backdrop-blur-[20px] border-r border-white/5 z-40 relative">
+        <div class="p-margin-md border-b border-white/5">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="font-headline-md text-headline-md text-primary tracking-tighter">CADAI</span>
+            </div>
+            <button id="new-session-btn"
+                class="w-full border border-white/20 py-3 px-gutter flex items-center justify-between hover:border-white transition-colors group">
+                <span class="font-label-caps text-label-caps">NEW SESSION</span>
+                <span class="material-symbols-outlined text-sm group-hover:rotate-90 transition-transform" data-icon="add">add</span>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-margin-md mb-2">
+                <span class="font-label-caps text-label-caps text-white/40 text-[9px]">RECENT SESSIONS</span>
+            </div>
+            <div id="session-list" class="space-y-1 px-2">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+        <div class="p-4 border-t border-white/5">
+            <button id="settings-btn"
+                class="flex items-center gap-3 w-full px-4 py-3 hover:bg-white/5 transition-all text-on-surface-variant hover:text-primary">
+                <span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+                <span class="font-label-caps text-label-caps">SYSTEM SETTINGS</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 right-0 w-[calc(100%-280px)] z-50 flex justify-between items-center px-margin-md h-16 bg-black/10 backdrop-blur-md border-b border-white/5 pointer-events-none">
+        <div class="flex items-center gap-gutter pointer-events-auto">
+            <span id="active-session-title"
+                class="font-data-sm text-data-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Session
+                active: None</span>
+        </div>
+        <div class="flex items-center gap-4 pointer-events-auto">
+            <button id="copy-fusion-btn" style="display: none;" class="px-4 py-2 border border-white/20 hover:border-white text-[10px] font-label-caps transition-colors">
+                SYNC TO FUSION
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 h-full flex flex-col relative overflow-hidden bg-black">
+        <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
+            <div class="absolute inset-0"
+                style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+            </div>
+        </div>
+
+        <!-- Chat Thread Content -->
+        <div id="chat-thread"
+            class="relative z-10 flex-1 overflow-y-auto px-margin-md py-margin-lg space-y-gutter max-w-5xl mx-auto w-full pb-48 pt-24">
+            <!-- Dynamically populated -->
+        </div>
+
+        <!-- Interaction Deck -->
+        <div class="fixed bottom-0 right-0 w-[calc(100%-280px)] z-30">
+            <div class="thinking-line w-full" id="thinking-line" style="display: none;"></div>
+            <div class="bg-black/80 backdrop-blur-xl border-t border-white/5 px-margin-md py-margin-md">
+                <div class="max-w-5xl mx-auto">
+                    <div class="relative flex items-center group">
+                        <div class="absolute left-4 z-10 flex items-center gap-2">
+                            <button id="attach-file-btn"
+                                class="w-8 h-8 flex items-center justify-center border border-white/20 hover:border-white/70 transition-colors">
+                                <span class="material-symbols-outlined text-primary text-xl" data-icon="attach_file">attach_file</span>
+                            </button>
+                        </div>
+                        <input id="prompt-input"
+                            class="w-full bg-transparent etched-border py-4 pl-16 pr-16 font-data-lg text-data-lg text-primary placeholder:text-white/20 focus:outline-none focus:border-white transition-all ring-0"
+                            placeholder="COMMAND INTELLIGENCE..." type="text">
+                        <div class="absolute right-4 z-10">
+                            <button id="send-btn"
+                                class="w-10 h-10 bg-white text-black flex items-center justify-center hover:bg-on-surface-variant transition-colors">
+                                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="attachments-container" class="mt-2 text-data-sm text-[10px] text-white/50"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center">
+        <div class="bg-surface-container-high border border-white/10 p-6 w-[500px]">
+            <h2 class="font-headline-md text-primary mb-4">Settings</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-label-caps text-[10px] text-white/50 mb-1">GEMINI API KEY</label>
+                    <input type="password" id="api-key-input" class="w-full bg-black/50 border border-white/20 p-2 text-primary font-data-sm text-sm focus:border-white outline-none">
+                </div>
+                <div>
+                    <label class="block font-label-caps text-[10px] text-white/50 mb-1">FUSION SCRIPT PATH</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="script-path-input" class="w-full bg-black/50 border border-white/20 p-2 text-primary font-data-sm text-sm focus:border-white outline-none">
+                        <button id="browse-script-btn" class="bg-white/10 px-4 text-xs font-label-caps hover:bg-white/20">BROWSE</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <button id="close-settings-btn" class="font-label-caps text-xs text-white/50 hover:text-white">CANCEL</button>
+                <button id="save-settings-btn" class="font-label-caps text-xs bg-white text-black px-4 py-2 hover:bg-white/80">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+        let isGenerating = false;
+        let attachedFiles = [];
+
+        const ui = {
+            sessionList: document.getElementById('session-list'),
+            chatThread: document.getElementById('chat-thread'),
+            promptInput: document.getElementById('prompt-input'),
+            sendBtn: document.getElementById('send-btn'),
+            thinkingLine: document.getElementById('thinking-line'),
+            activeSessionTitle: document.getElementById('active-session-title'),
+            newSessionBtn: document.getElementById('new-session-btn'),
+            copyFusionBtn: document.getElementById('copy-fusion-btn'),
+            settingsBtn: document.getElementById('settings-btn'),
+            settingsModal: document.getElementById('settings-modal'),
+            closeSettingsBtn: document.getElementById('close-settings-btn'),
+            saveSettingsBtn: document.getElementById('save-settings-btn'),
+            apiKeyInput: document.getElementById('api-key-input'),
+            scriptPathInput: document.getElementById('script-path-input'),
+            attachFileBtn: document.getElementById('attach-file-btn'),
+            attachmentsContainer: document.getElementById('attachments-container')
+        };
+
+        // Initialize
+        async function init() {
+            await loadSessions();
+            if(!currentSessionId) {
+                await createNewSession();
+            }
+            loadSettings();
+        }
+
+        async function loadSessions() {
+            const res = await fetch('/api/sessions');
+            const sessions = await res.json();
+            ui.sessionList.innerHTML = '';
+            
+            sessions.forEach(session => {
+                const btn = document.createElement('button');
+                const isActive = session.id === currentSessionId;
+                btn.className = `w-full text-left px-4 py-3 transition-all group ${isActive ? 'bg-white/5 border-l-2 border-white' : 'hover:bg-white/5'}`;
+                btn.innerHTML = `
+                    <p class="font-body-md text-sm truncate ${isActive ? 'text-primary' : 'text-on-surface-variant group-hover:text-primary'}">${session.title}</p>
+                    <p class="font-data-sm text-[10px] text-white/30 mt-1 uppercase">${new Date(session.updated_at).toLocaleDateString()}</p>
+                `;
+                btn.onclick = () => loadSession(session.id);
+                btn.oncontextmenu = async (e) => {
+                    e.preventDefault();
+                    if (confirm(`Delete session "${session.title}"?`)) {
+                        await fetch(`/api/sessions/${session.id}`, { method: 'DELETE' });
+                        if (currentSessionId === session.id) {
+                            currentSessionId = null;
+                            ui.chatThread.innerHTML = '';
+                            ui.activeSessionTitle.innerText = 'Session active: None';
+                            ui.copyFusionBtn.style.display = 'none';
+                        }
+                        await loadSessions();
+                    }
+                };
+                ui.sessionList.appendChild(btn);
+            });
+        }
+
+        async function createNewSession() {
+            const res = await fetch('/api/sessions/new', { method: 'POST' });
+            const data = await res.json();
+            await loadSession(data.id);
+            await loadSessions();
+        }
+
+        async function loadSession(sessionId) {
+            currentSessionId = sessionId;
+            const res = await fetch(`/api/sessions/${sessionId}`);
+            const session = await res.json();
+            
+            ui.activeSessionTitle.innerText = `Session active: ${session.title}`;
+            ui.chatThread.innerHTML = '';
+            ui.copyFusionBtn.style.display = 'block';
+            
+            // Re-render history
+            session.messages.forEach(msg => {
+                appendMessageToUI(msg.role, msg.content, msg.timestamp);
+            });
+            
+            await loadSessions(); // update active state in sidebar
+            
+            // Notify backend this is the active session so it syncs its code
+            await fetch(`/api/sessions/${sessionId}/activate`, { method: 'POST' });
+        }
+
+        function appendMessageToUI(role, content, timestamp) {
+            const timeStr = new Date(timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            const div = document.createElement('div');
+            
+            if(role === 'user') {
+                div.className = 'flex flex-col items-end gap-2';
+                div.innerHTML = `
+                    <div class="max-w-[80%] glass-panel px-gutter py-3">
+                        <p class="font-body-md text-primary">${content}</p>
+                    </div>
+                    <span class="font-data-sm text-data-sm text-on-surface-variant opacity-50">${timeStr}</span>
+                `;
+            } else {
+                div.className = 'flex flex-col items-start gap-2';
+                
+                // Parse AI response. Typically it has some text and a code block.
+                // We'll use marked.js to render markdown for simplicity.
+                let htmlContent = marked.parse(content);
+                
+                // Customize code block rendering to match design
+                htmlContent = htmlContent.replace(/<pre><code class="(.*?)">([\s\S]*?)<\/code><\/pre>/g, function(match, p1, p2) {
+                    return `
+                    <div class="bg-black/40 p-4 font-data-sm text-data-sm mt-2">
+                        <pre class="text-secondary overflow-x-auto"><code>${p2}</code></pre>
+                    </div>
+                    `;
+                });
+
+                div.innerHTML = `
+                    <div class="max-w-[90%] glass-panel p-0 overflow-hidden">
+                        <div class="px-gutter py-3 border-b border-white/5 bg-white/2 markdown-body font-body-md text-primary">
+                            ${htmlContent}
+                        </div>
+                    </div>
+                    <span class="font-data-sm text-data-sm text-on-surface-variant opacity-50">${timeStr}</span>
+                `;
+            }
+            ui.chatThread.appendChild(div);
+            ui.chatThread.scrollTop = ui.chatThread.scrollHeight;
+            return div;
+        }
+
+        async function sendMessage() {
+            if(isGenerating) return;
+            const text = ui.promptInput.value.trim();
+            if(!text && attachedFiles.length === 0) return;
+
+            ui.promptInput.value = '';
+            ui.thinkingLine.style.display = 'block';
+            isGenerating = true;
+
+            appendMessageToUI('user', text, new Date());
+            
+            // Create a placeholder for AI streaming
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'flex flex-col items-start gap-2';
+            aiDiv.innerHTML = `
+                <div class="max-w-[90%] glass-panel p-0 overflow-hidden w-full">
+                    <div class="px-gutter py-3 border-b border-white/5 bg-white/2 font-body-md text-primary" id="ai-stream-content">
+                        Thinking...
+                    </div>
+                </div>
+            `;
+            ui.chatThread.appendChild(aiDiv);
+            ui.chatThread.scrollTop = ui.chatThread.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        prompt: text,
+                        files: attachedFiles
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let fullText = "";
+
+                const contentBox = aiDiv.querySelector('#ai-stream-content');
+                contentBox.innerHTML = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullText += chunk;
+                    
+                    // Simple real-time update (markdown not rendered during stream to avoid jank)
+                    contentBox.innerText = fullText;
+                    ui.chatThread.scrollTop = ui.chatThread.scrollHeight;
+                }
+                
+                attachedFiles = [];
+                ui.attachmentsContainer.innerHTML = '';
+                
+                // Force a full re-render of the session to ensure exact UI sync
+                await loadSession(currentSessionId);
+
+            } catch (err) {
+                console.error(err);
+                aiDiv.querySelector('#ai-stream-content').innerText = "Error communicating with AI.";
+            }
+
+            ui.thinkingLine.style.display = 'none';
+            isGenerating = false;
+        }
+
+        async function loadSettings() {
+            const res = await fetch('/api/settings');
+            const data = await res.json();
+            ui.apiKeyInput.value = data.api_key || '';
+            ui.scriptPathInput.value = data.script_path || '';
+        }
+
+        async function saveSettings() {
+            const data = {
+                api_key: ui.apiKeyInput.value,
+                script_path: ui.scriptPathInput.value
+            };
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            ui.settingsModal.classList.add('hidden');
+        }
+
+        ui.promptInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        ui.sendBtn.onclick = sendMessage;
+        ui.newSessionBtn.onclick = createNewSession;
+        ui.settingsBtn.onclick = () => ui.settingsModal.classList.remove('hidden');
+        ui.closeSettingsBtn.onclick = () => ui.settingsModal.classList.add('hidden');
+        ui.saveSettingsBtn.onclick = saveSettings;
+        
+        ui.attachFileBtn.onclick = async () => {
+            // using pywebview API if available
+            if (window.pywebview) {
+                const files = await window.pywebview.api.open_file_dialog();
+                if (files && files.length > 0) {
+                    attachedFiles.push(...files);
+                    ui.attachmentsContainer.innerHTML = `Attached: ${attachedFiles.map(f => f.split('\\').pop()).join(', ')}`;
+                }
+            } else {
+                alert("File dialog requires PyWebView context.");
+            }
+        };
+
+        document.getElementById('browse-script-btn').onclick = async () => {
+            if (window.pywebview) {
+                const path = await window.pywebview.api.open_script_file_dialog();
+                if (path) ui.scriptPathInput.value = path;
+            }
+        };
+
+        // Drag and drop support
+        window.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        window.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                for (const file of e.dataTransfer.files) {
+                    if (file.path) {
+                        attachedFiles.push(file.path);
+                    } else if (file.name) {
+                        attachedFiles.push(file.name);
+                    }
+                }
+                ui.attachmentsContainer.innerHTML = `Attached: ${attachedFiles.map(f => f.split('\\\\').pop()).join(', ')}`;
+            }
+        });
+
+        ui.copyFusionBtn.onclick = async () => {
+            if(!currentSessionId) return;
+            ui.copyFusionBtn.innerText = "SYNCING...";
+            await fetch(`/api/sessions/${currentSessionId}/activate`, { method: 'POST' });
+            setTimeout(() => { ui.copyFusionBtn.innerText = "SYNC TO FUSION"; }, 1000);
+        };
+
+        // Start
+        init();
+    </script>
+</body>
+</html>

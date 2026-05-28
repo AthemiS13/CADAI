@@ -1,0 +1,987 @@
+<!-- CADAI Workspace - Clean History Focused -->
+<!DOCTYPE html>
+<html class="dark" lang="en" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>CADAI Intelligence Interface</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2a2a2a",
+                        "primary-container": "#e2e2e2",
+                        "on-surface-variant": "#c4c7c8",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#393939",
+                        "surface-container-highest": "#353535",
+                        "secondary": "#ecffe3",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#002203",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#00530e",
+                        "primary": "#ffffff",
+                        "tertiary": "#ffffff",
+                        "on-secondary-container": "#007117",
+                        "tertiary-container": "#ffdad5",
+                        "on-primary": "#2f3131",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error": "#690005",
+                        "on-secondary": "#003907",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#303030",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#410001",
+                        "secondary-fixed-dim": "#00e639",
+                        "outline-variant": "#444748",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed": "#ffdad5",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "surface": "#131313",
+                        "secondary-container": "#13ff43",
+                        "surface-tint": "#c6c6c7",
+                        "outline": "#8e9192",
+                        "on-primary-container": "#636565",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed": "#e2e2e2",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#ca0a0f",
+                        "background": "#000000",
+                        "surface-variant": "#353535",
+                        "inverse-primary": "#5d5f5f",
+                        "on-tertiary": "#690003",
+                        "secondary-fixed": "#72ff70"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-md": "24px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "panel-width-fixed": "320px",
+                        "margin-sm": "12px",
+                        "margin-lg": "40px"
+                    },
+                    "fontFamily": {
+                        "data-sm": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .thinking-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #ffffff 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: moveLine 2s infinite linear;
+            opacity: 0.8;
+        }
+
+        @keyframes moveLine {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .etched-border {
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-primary font-body-md overflow-hidden h-screen flex">
+    <!-- History Sidebar -->
+    <aside class="w-[280px] h-full flex flex-col bg-black/3 backdrop-blur-[20px] border-r border-white/5 z-40 relative">
+        <!-- Header / New Chat -->
+        <div class="p-margin-md border-b border-white/5">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="font-headline-md text-headline-md text-primary tracking-tighter">CADAI</span>
+            </div>
+            <button
+                class="w-full border border-white/20 py-3 px-gutter flex items-center justify-between hover:border-white transition-colors group">
+                <span class="font-label-caps text-label-caps">NEW SESSION</span>
+                <span class="material-symbols-outlined text-sm group-hover:rotate-90 transition-transform"
+                    data-icon="add">add</span>
+            </button>
+        </div>
+        <!-- Thread List -->
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-margin-md mb-2">
+                <span class="font-label-caps text-label-caps text-white/40 text-[9px]">RECENT SESSIONS</span>
+            </div>
+            <div class="space-y-1 px-2">
+                <button class="w-full text-left px-4 py-3 bg-white/5 border-l-2 border-white transition-all">
+                    <p class="font-body-md text-sm text-primary truncate">Parametric Flange Generator</p>
+                    <p class="font-data-sm text-[10px] text-white/30 mt-1 uppercase">14:20:01</p>
+                </button>
+                <button class="w-full text-left px-4 py-3 hover:bg-white/5 transition-all group">
+                    <p class="font-body-md text-sm text-on-surface-variant group-hover:text-primary truncate">
+                        High-Pressure Manifold Analysis</p>
+                    <p class="font-data-sm text-[10px] text-white/20 mt-1 uppercase">Yesterday</p>
+                </button>
+                <button class="w-full text-left px-4 py-3 hover:bg-white/5 transition-all group">
+                    <p class="font-body-md text-sm text-on-surface-variant group-hover:text-primary truncate">Aerospace
+                        Component Sketch</p>
+                    <p class="font-data-sm text-[10px] text-white/20 mt-1 uppercase">Oct 24</p>
+                </button>
+            </div>
+        </div>
+        <!-- Sidebar Bottom Anchor -->
+        <div class="p-4 border-t border-white/5">
+            <button
+                class="flex items-center gap-3 w-full px-4 py-3 hover:bg-white/5 transition-all text-on-surface-variant hover:text-primary">
+                <span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+                <span class="font-label-caps text-label-caps">SYSTEM SETTINGS</span>
+            </button>
+        </div>
+    </aside>
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 right-0 w-[calc(100%-280px)] z-50 flex justify-between items-center px-margin-md h-16 bg-black/10 backdrop-blur-md border-b border-white/5">
+        <div class="flex items-center gap-gutter">
+            <span
+                class="font-data-sm text-data-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Session
+                active: Parametric Flange Generator</span>
+        </div>
+        <div class="flex items-center gap-4">
+        </div>
+    </header>
+    <!-- Main Workspace -->
+    <main class="flex-1 h-full flex flex-col relative overflow-hidden bg-black">
+        <!-- Viewport Background (CAD Geometry Simulation) -->
+        <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
+            <!-- Grid Overlay -->
+            <div class="absolute inset-0"
+                style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+            </div>
+        </div>
+        <!-- Chat Thread Content -->
+        <div
+            class="relative z-10 flex-1 overflow-y-auto px-margin-md py-margin-lg space-y-gutter max-w-5xl mx-auto w-full pb-48 pt-24">
+            <!-- User Message -->
+            <div class="flex flex-col items-end gap-2">
+                <div class="max-w-[80%] glass-panel px-gutter py-3">
+                    <p class="font-body-md text-primary">Generate a Python script to create a parametric flange with 8
+                        holes for a high-pressure manifold, using Fusion 360 API.</p>
+                </div>
+                <span class="font-data-sm text-data-sm text-on-surface-variant opacity-50">14:20:01</span>
+            </div>
+            <!-- AI Message with Code Block -->
+            <div class="flex flex-col items-start gap-2">
+                <div class="max-w-[90%] glass-panel p-0 overflow-hidden">
+                    <div class="px-gutter py-3 border-b border-white/5 bg-white/2">
+                        <p class="font-body-md text-primary">Requirement acknowledged. Calculating geometric constraints
+                            for pressure-rated manifold flange.</p>
+                    </div>
+                    <!-- Code Block -->
+                    <div class="bg-black/40 p-4 font-data-sm text-data-sm">
+                        <pre class="text-secondary overflow-x-auto"><code>import adsk.core, adsk.fusion, traceback
+
+def run(context):
+    ui = None
+    try:
+        app = adsk.core.Application.get()
+        ui  = app.userInterface
+        design = app.activeProduct
+        rootComp = design.rootComponent
+        
+        # Define Parametrics
+        flange_dia = 120.0 # mm
+        hole_count = 8
+        pressure_val = 450 # psi
+        
+        # Sketch generation logic...
+        sketches = rootComp.sketches
+        xyPlane = rootComp.xYConstructionPlane
+        sketch = sketches.add(xyPlane)
+        
+        circles = sketch.sketchCurves.sketchCircles
+        centerPoint = adsk.core.Point3D.create(0, 0, 0)
+        circles.addByCenterRadius(centerPoint, flange_dia / 20)
+        
+        ui.messageBox('Parametric Flange Generated')
+    except:
+        if ui:
+            ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))</code></pre>
+                    </div>
+                    <!-- IDE Controls -->
+                    <div class="flex items-center gap-px bg-white/5 border-t border-white/5">
+                        <button
+                            class="flex-1 py-3 px-gutter hover:bg-white/10 transition-colors flex items-center justify-center gap-2 group">
+                            <span
+                                class="material-symbols-outlined text-sm text-on-surface-variant group-hover:text-primary"
+                                data-icon="content_copy">content_copy</span>
+                            <span
+                                class="font-label-caps text-label-caps text-on-surface-variant group-hover:text-primary">COPY
+                                SCRIPT</span>
+                        </button>
+                        <div class="w-[1px] h-6 bg-white/10"></div>
+                    </div>
+                </div>
+                <span class="font-data-sm text-data-sm text-on-surface-variant opacity-50">14:20:05</span>
+            </div>
+        </div>
+        <!-- Interaction Deck (Fixed Bottom) -->
+        <div class="fixed bottom-0 right-0 w-[calc(100%-280px)] z-30">
+            <!-- Thinking Line -->
+            <div class="thinking-line w-full" style="display: none;"></div>
+            <div class="bg-black/80 backdrop-blur-xl border-t border-white/5 px-margin-md py-margin-md">
+                <div class="max-w-5xl mx-auto">
+                    <div class="relative flex items-center group">
+                        <div class="absolute left-4 z-10 flex items-center gap-2">
+                            <button
+                                class="w-8 h-8 flex items-center justify-center border border-white/20 hover:border-white/70 transition-colors">
+                                <span class="material-symbols-outlined text-primary text-xl" data-icon="add">add</span>
+                            </button>
+                        </div>
+                        <input
+                            class="w-full bg-transparent etched-border py-4 pl-16 pr-16 font-data-lg text-data-lg text-primary placeholder:text-white/20 focus:outline-none focus:border-white transition-all ring-0"
+                            placeholder="COMMAND INTELLIGENCE..." type="text">
+                        <div class="absolute right-4 z-10">
+                            <button
+                                class="w-10 h-10 bg-white text-black flex items-center justify-center hover:bg-on-surface-variant transition-colors">
+                                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="fixed bottom-0 right-0 w-[calc(100%-280px)] px-margin-md py-unit flex justify-between items-center z-30 bg-transparent h-10 pointer-events-none">
+
+        <div class="flex items-center gap-6 pointer-events-auto">
+        </div>
+    </footer>
+    <script>
+        const inputField = document.querySelector('input');
+        const thinkingLine = document.querySelector('.thinking-line');
+
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                thinkingLine.style.display = 'block';
+                inputField.value = '';
+                setTimeout(() => {
+                    thinkingLine.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        thinkingLine.style.display = 'none';
+
+        document.addEventListener('mousemove', (e) => {
+            const viewport = document.querySelector('main img');
+            const x = (window.innerWidth / 2 - e.pageX) / 80;
+            const y = (window.innerHeight / 2 - e.pageY) / 80;
+            viewport.style.transform = `scale(1.1) translate(${x}px, ${y}px)`;
+        });
+    </script>
+
+
+</body>
+
+</html>
+
+<!-- CADAI Workspace - Clean Drag & Drop State -->
+<!DOCTYPE html>
+<html class="dark" lang="en" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>CADAI Intelligence Interface</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2a2a2a",
+                        "primary-container": "#e2e2e2",
+                        "on-surface-variant": "#c4c7c8",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#393939",
+                        "surface-container-highest": "#353535",
+                        "secondary": "#ecffe3",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#002203",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#00530e",
+                        "primary": "#ffffff",
+                        "tertiary": "#ffffff",
+                        "on-secondary-container": "#007117",
+                        "tertiary-container": "#ffdad5",
+                        "on-primary": "#2f3131",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error": "#690005",
+                        "on-secondary": "#003907",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#303030",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#410001",
+                        "secondary-fixed-dim": "#00e639",
+                        "outline-variant": "#444748",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed": "#ffdad5",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "surface": "#131313",
+                        "secondary-container": "#13ff43",
+                        "surface-tint": "#c6c6c7",
+                        "outline": "#8e9192",
+                        "on-primary-container": "#636565",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed": "#e2e2e2",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#ca0a0f",
+                        "background": "#000000",
+                        "surface-variant": "#353535",
+                        "inverse-primary": "#5d5f5f",
+                        "on-tertiary": "#690003",
+                        "secondary-fixed": "#72ff70"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-md": "24px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "panel-width-fixed": "320px",
+                        "margin-sm": "12px",
+                        "margin-lg": "40px"
+                    },
+                    "fontFamily": {
+                        "data-sm": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .thinking-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #ffffff 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: moveLine 2s infinite linear;
+            opacity: 0.8;
+        }
+
+        @keyframes moveLine {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .etched-border {
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-primary font-body-md overflow-hidden h-screen flex">
+    <!-- History Sidebar -->
+    <aside class="w-[280px] h-full flex flex-col bg-black/3 backdrop-blur-[20px] border-r border-white/5 z-40 relative">
+        <!-- Header / New Chat -->
+        <div class="p-margin-md border-b border-white/5">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="font-headline-md text-headline-md text-primary tracking-tighter">CADAI</span>
+            </div>
+            <button
+                class="w-full border border-white/20 py-3 px-gutter flex items-center justify-between hover:border-white transition-colors group">
+                <span class="font-label-caps text-label-caps">NEW SESSION</span>
+                <span class="material-symbols-outlined text-sm group-hover:rotate-90 transition-transform"
+                    data-icon="add">add</span>
+            </button>
+        </div>
+        <!-- Thread List -->
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="px-margin-md mb-2">
+                <span class="font-label-caps text-label-caps text-white/40 text-[9px]">RECENT SESSIONS</span>
+            </div>
+            <div class="space-y-1 px-2">
+                <button class="w-full text-left px-4 py-3 bg-white/5 border-l-2 border-white transition-all">
+                    <p class="font-body-md text-sm text-primary truncate">Parametric Flange Generator</p>
+                    <p class="font-data-sm text-[10px] text-white/30 mt-1 uppercase">14:20:01</p>
+                </button>
+                <button class="w-full text-left px-4 py-3 hover:bg-white/5 transition-all group">
+                    <p class="font-body-md text-sm text-on-surface-variant group-hover:text-primary truncate">
+                        High-Pressure Manifold Analysis</p>
+                    <p class="font-data-sm text-[10px] text-white/20 mt-1 uppercase">Yesterday</p>
+                </button>
+                <button class="w-full text-left px-4 py-3 hover:bg-white/5 transition-all group">
+                    <p class="font-body-md text-sm text-on-surface-variant group-hover:text-primary truncate">Aerospace
+                        Component Sketch</p>
+                    <p class="font-data-sm text-[10px] text-white/20 mt-1 uppercase">Oct 24</p>
+                </button>
+            </div>
+        </div>
+        <!-- Sidebar Bottom Anchor -->
+        <div class="p-4 border-t border-white/5">
+            <button
+                class="flex items-center gap-3 w-full px-4 py-3 hover:bg-white/5 transition-all text-on-surface-variant hover:text-primary">
+                <span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+                <span class="font-label-caps text-label-caps">SYSTEM SETTINGS</span>
+            </button>
+        </div>
+    </aside>
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 right-0 w-[calc(100%-280px)] z-50 flex justify-between items-center px-margin-md h-16 bg-black/10 backdrop-blur-md border-b border-white/5">
+        <div class="flex items-center gap-gutter">
+            <span
+                class="font-data-sm text-data-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Session
+                active: Parametric Flange Generator</span>
+        </div>
+        <div class="flex items-center gap-4">
+        </div>
+    </header>
+    <!-- Main Workspace -->
+    <main class="flex-1 h-full flex flex-col relative overflow-hidden bg-black">
+        <!-- Viewport Background (CAD Geometry Simulation) -->
+        <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-20">
+            <!-- Grid Overlay -->
+            <div class="absolute inset-0"
+                style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 40px 40px;">
+            </div>
+        </div>
+        <!-- Chat Thread Content -->
+        <div
+            class="relative z-10 flex-1 overflow-y-auto px-margin-md py-margin-lg space-y-gutter max-w-5xl mx-auto w-full pb-48 pt-24">
+            <!-- User Message -->
+            <div class="flex flex-col items-end gap-2">
+                <div class="max-w-[80%] glass-panel px-gutter py-3">
+                    <p class="font-body-md text-primary">Generate a Python script to create a parametric flange with 8
+                        holes for a high-pressure manifold, using Fusion 360 API.</p>
+                </div>
+                <span class="font-data-sm text-data-sm text-on-surface-variant opacity-50">14:20:01</span>
+            </div>
+            <!-- AI Message with Code Block -->
+            <div class="flex flex-col items-start gap-2">
+                <div class="max-w-[90%] glass-panel p-0 overflow-hidden">
+                    <div class="px-gutter py-3 border-b border-white/5 bg-white/2">
+                        <p class="font-body-md text-primary">Requirement acknowledged. Calculating geometric constraints
+                            for pressure-rated manifold flange.</p>
+                    </div>
+                    <!-- Code Block -->
+                    <div class="bg-black/40 p-4 font-data-sm text-data-sm">
+                        <pre class="text-secondary overflow-x-auto"><code>import adsk.core, adsk.fusion, traceback
+
+def run(context):
+    ui = None
+    try:
+        app = adsk.core.Application.get()
+        ui  = app.userInterface
+        design = app.activeProduct
+        rootComp = design.rootComponent
+        
+        # Define Parametrics
+        flange_dia = 120.0 # mm
+        hole_count = 8
+        pressure_val = 450 # psi
+        
+        # Sketch generation logic...
+        sketches = rootComp.sketches
+        xyPlane = rootComp.xYConstructionPlane
+        sketch = sketches.add(xyPlane)
+        
+        circles = sketch.sketchCurves.sketchCircles
+        centerPoint = adsk.core.Point3D.create(0, 0, 0)
+        circles.addByCenterRadius(centerPoint, flange_dia / 20)
+        
+        ui.messageBox('Parametric Flange Generated')
+    except:
+        if ui:
+            ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))</code></pre>
+                    </div>
+                    <!-- IDE Controls -->
+                    <div class="flex items-center gap-px bg-white/5 border-t border-white/5">
+                        <button
+                            class="flex-1 py-3 px-gutter hover:bg-white/10 transition-colors flex items-center justify-center gap-2 group">
+                            <span
+                                class="material-symbols-outlined text-sm text-on-surface-variant group-hover:text-primary"
+                                data-icon="content_copy">content_copy</span>
+                            <span
+                                class="font-label-caps text-label-caps text-on-surface-variant group-hover:text-primary">COPY
+                                SCRIPT</span>
+                        </button>
+                        <div class="w-[1px] h-6 bg-white/10"></div>
+                    </div>
+                </div>
+                <span class="font-data-sm text-data-sm text-on-surface-variant opacity-50">14:20:05</span>
+            </div>
+        </div>
+        <!-- Interaction Deck (Fixed Bottom) -->
+        <div class="fixed bottom-0 right-0 w-[calc(100%-280px)] z-30">
+            <!-- Thinking Line -->
+            <div class="thinking-line w-full" style="display: none;"></div>
+            <div class="bg-black/80 backdrop-blur-xl border-t border-white/5 px-margin-md py-margin-md">
+                <div class="max-w-5xl mx-auto">
+                    <div class="relative flex items-center group">
+                        <div class="absolute left-4 z-10 flex items-center gap-2">
+                            <button
+                                class="w-8 h-8 flex items-center justify-center border border-white/20 hover:border-white/70 transition-colors">
+                                <span class="material-symbols-outlined text-primary text-xl" data-icon="add">add</span>
+                            </button>
+                        </div>
+                        <input
+                            class="w-full bg-transparent py-4 pl-16 pr-16 font-data-lg text-data-lg text-primary placeholder:text-white/20 focus:outline-none focus:border-white transition-all ring-0 border-2 border-dashed border-white bg-white/10"
+                            placeholder="DROP FILE TO ATTACH..." type="text">
+                        <div class="absolute right-16 flex items-center gap-2 pointer-events-none"><span
+                                class="material-symbols-outlined text-sm text-primary">upload_file</span><span
+                                class="font-label-caps text-[10px] text-primary">READY FOR UPLOAD</span></div>
+                        <div class="absolute right-4 z-10">
+                            <button
+                                class="w-10 h-10 bg-white text-black flex items-center justify-center hover:bg-on-surface-variant transition-colors">
+                                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <script>
+        const inputField = document.querySelector('input');
+        const thinkingLine = document.querySelector('.thinking-line');
+
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                thinkingLine.style.display = 'block';
+                inputField.value = '';
+                setTimeout(() => {
+                    thinkingLine.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        thinkingLine.style.display = 'none';
+
+        document.addEventListener('mousemove', (e) => {
+            const viewport = document.querySelector('main img');
+            const x = (window.innerWidth / 2 - e.pageX) / 80;
+            const y = (window.innerHeight / 2 - e.pageY) / 80;
+            viewport.style.transform = `scale(1.1) translate(${x}px, ${y}px)`;
+        });
+    </script>
+</body>
+
+</html>
+
+<!-- CADAI Settings -->
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+
+        .glass-panel {
+            background: rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-panel-active {
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .etched-border {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .traveling-light {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .traveling-light::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            animation: travel 3s infinite linear;
+        }
+
+        @keyframes travel {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#2a2a2a",
+                        "primary-container": "#e2e2e2",
+                        "on-surface-variant": "#c4c7c8",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#393939",
+                        "surface-container-highest": "#353535",
+                        "secondary": "#ecffe3",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#002203",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#00530e",
+                        "primary": "#ffffff",
+                        "tertiary": "#ffffff",
+                        "on-secondary-container": "#007117",
+                        "tertiary-container": "#ffdad5",
+                        "on-primary": "#2f3131",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-error": "#690005",
+                        "on-secondary": "#003907",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#303030",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#410001",
+                        "secondary-fixed-dim": "#00e639",
+                        "outline-variant": "#444748",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed": "#ffdad5",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "surface": "#131313",
+                        "secondary-container": "#13ff43",
+                        "surface-tint": "#c6c6c7",
+                        "outline": "#8e9192",
+                        "on-primary-container": "#636565",
+                        "surface-container": "#1f1f1f",
+                        "on-surface": "#e2e2e2",
+                        "primary-fixed": "#e2e2e2",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#ca0a0f",
+                        "background": "#131313",
+                        "surface-variant": "#353535",
+                        "inverse-primary": "#5d5f5f",
+                        "on-tertiary": "#690003",
+                        "secondary-fixed": "#72ff70"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-md": "24px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "panel-width-fixed": "320px",
+                        "margin-sm": "12px",
+                        "margin-lg": "40px"
+                    },
+                    "fontFamily": {
+                        "data-sm": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "data-lg": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "data-sm": ["12px", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-caps": ["10px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "data-lg": ["14px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-black font-body-md text-on-surface">
+    <!-- Top Navigation Bar -->
+    <header
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-md h-16 bg-black/10 backdrop-blur-md border-b border-white/5">
+        <div class="font-headline-md text-headline-md text-primary tracking-tighter">CADAI</div>
+        <div class="flex items-center space-x-gutter">
+            <span
+                class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-opacity duration-200">account_circle</span>
+            <span
+                class="material-symbols-outlined text-primary cursor-pointer hover:text-primary transition-opacity duration-200 border-b border-primary pb-1">settings</span>
+        </div>
+    </header>
+    <!-- Side Navigation Bar -->
+    <nav
+        class="fixed left-0 top-0 h-full w-[80px] bg-black/3 backdrop-blur-[20px] border-r border-white/5 flex flex-col items-center py-margin-md space-y-gutter z-40">
+        <div class="mb-margin-lg mt-16">
+            <div class="font-label-caps text-label-caps text-primary text-center">V1.0</div>
+        </div>
+        <div class="flex flex-col space-y-8 items-center w-full">
+            <div
+                class="group flex flex-col items-center cursor-pointer text-on-surface-variant hover:text-white transition-all duration-200">
+                <span class="material-symbols-outlined">chat_bubble</span>
+                <span class="font-label-caps text-label-caps mt-1">History</span>
+            </div>
+            <div
+                class="group flex flex-col items-center cursor-pointer text-white border-l-2 border-white transition-all duration-200 pl-1">
+                <span class="material-symbols-outlined">settings_input_component</span>
+                <span class="font-label-caps text-label-caps mt-1">Settings</span>
+            </div>
+            <div
+                class="group flex flex-col items-center cursor-pointer text-on-surface-variant hover:text-white transition-all duration-200">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="font-label-caps text-label-caps mt-1">Status</span>
+            </div>
+            <div
+                class="group flex flex-col items-center cursor-pointer text-on-surface-variant hover:text-white transition-all duration-200">
+                <span class="material-symbols-outlined">sensors</span>
+                <span class="font-label-caps text-label-caps mt-1">API</span>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Workspace (Background Content) -->
+    <main class="ml-[80px] mt-16 min-h-[calc(100vh-64px)] p-margin-md relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <img alt="CAD Background" class="w-full h-full object-cover"
+                data-alt="A sophisticated close-up of a high-tech CAD workspace featuring a complex 3D engine block model rendered in wireframe against an absolute black background. The scene is illuminated with sharp, cool-toned procedural lighting that highlights the intricate geometric details. The aesthetic is industrial, technical, and hyper-modern, reflecting a high-performance engineering environment with no visible UI clutter."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRJbffhsFl_NqSPZ9e0lJ3hlwcllVCQk2of24W8pAycNCoMOQuW8UkmvdOIFnnXxI9ybiS1iCURiLFexJdznY0WZ3vZWoPJirBqBNG22gHE0NAfT4V6aX0HcYcWUYtpnj2x4_g8So-TA-wRYhAQoKiTy7GGyepb-ZFDF2uMH08blzLeRCFAcBZIhB6TWt41UPRJVwnLhPo6IeosZRRchZy6Cn7d5Iots_ui2NNrEg0On-NYKLDmQGp71SiIaM74R3ZqSnw_BO3O8Y">
+        </div>
+        <!-- Chat Workspace Preview (Dimmed) -->
+        <div class="relative z-10 max-w-4xl mx-auto opacity-30 pointer-events-none">
+            <div class="glass-panel p-gutter mb-gutter">
+                <div class="font-label-caps text-label-caps text-on-surface-variant mb-2">SYSTEM://INITIALIZED</div>
+                <div class="font-body-md text-on-surface">Waiting for geometric input parameters...</div>
+            </div>
+        </div>
+        <!-- Settings Overlay Modal -->
+        <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-margin-md">
+            <div class="w-full max-w-lg glass-panel-active bg-black/90 p-8 relative flex flex-col space-y-8">
+                <!-- Traveling light line effect -->
+                <div class="absolute top-0 left-0 w-full h-[1px] traveling-light"></div>
+                <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                    <h2 class="font-headline-md text-headline-md tracking-tight uppercase">Control Surface</h2>
+                    <span class="material-symbols-outlined cursor-pointer hover:text-primary/50 transition-colors"
+                        onclick="this.parentElement.parentElement.parentElement.style.display='none'">close</span>
+                </div>
+                <div class="space-y-6">
+                    <!-- Path Input -->
+                    <div class="space-y-2">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Fusion 360
+                            Script Path</label>
+                        <div class="relative group">
+                            <input
+                                class="w-full bg-transparent etched-border px-4 py-3 font-data-sm text-data-sm focus:outline-none focus:border-white transition-colors pr-10"
+                                type="text" value="C:/Users/Admin/Autodesk/Scripts">
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-hover:text-primary transition-colors cursor-pointer">folder_open</span>
+                        </div>
+                    </div>
+                    <!-- API Key Entry -->
+                    <div class="space-y-2">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant uppercase">API Key
+                            Entry</label>
+                        <div class="relative group">
+                            <input
+                                class="w-full bg-transparent etched-border px-4 py-3 font-data-sm text-data-sm focus:outline-none focus:border-white transition-colors pr-10"
+                                type="password" value="sk-••••••••••••••••••••">
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-hover:text-primary transition-colors cursor-pointer">visibility_off</span>
+                        </div>
+                    </div>
+                    <!-- Model Selection -->
+
+                </div>
+                <!-- Footer Actions -->
+                <div class="pt-4 flex flex-col space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-1.5 h-1.5 bg-secondary-fixed-dim rounded-full animate-pulse" style="opacity: 1;">
+                        </div>
+                        <span class="font-data-sm text-data-sm text-on-surface-variant">Gemini integrity verified.
+                            Connection: Active.</span>
+                    </div>
+                    <div class="flex space-x-gutter">
+                        <button
+                            class="flex-1 etched-border py-4 font-label-caps text-label-caps tracking-widest hover:bg-white/5 transition-all">
+                            DISCARD
+                        </button>
+                        <button
+                            class="flex-1 bg-white text-black py-4 font-label-caps text-label-caps tracking-widest hover:opacity-90 transition-all font-bold">
+                            APPLY CHANGES
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="fixed bottom-0 right-0 w-[calc(100%-80px)] px-margin-md py-unit flex justify-between items-center z-30 bg-transparent border-t border-white/5 h-10">
+        <div class="font-data-sm text-data-sm text-on-surface-variant">© 2024 CADAI INDUSTRIAL</div>
+        <div class="flex space-x-gutter">
+            <a class="font-data-sm text-data-sm text-on-surface-variant hover:text-primary transition-colors duration-200"
+                href="#">Privacy</a>
+            <a class="font-data-sm text-data-sm text-on-surface-variant hover:text-primary transition-colors duration-200"
+                href="#">Docs</a>
+            <div class="flex items-center space-x-1">
+                <div class="w-2 h-2 bg-secondary-fixed-dim rounded-full shadow-[0_0_8px_rgba(0,230,57,0.5)]"></div>
+                <span class="font-data-sm text-data-sm text-on-surface-variant">System Status</span>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Micro-interaction for input travel light logic or state changes
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.parentElement.classList.add('glass-panel-active');
+            });
+            element.addEventListener('blur', () => {
+                element.parentElement.classList.remove('glass-panel-active');
+            });
+        });
+
+        // Pulsing LED Logic simulation
+        setInterval(() => {
+            const led = document.querySelector('.animate-pulse');
+            if (led) {
+                led.style.opacity = led.style.opacity === '0.4' ? '1' : '0.4';
+            }
+        }, 1500);
+    </script>
+
+
+</body>
+
+</html>

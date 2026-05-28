@@ -3,3 +3,5 @@ google-generativeai
 keyring
 PyMuPDF
 Pillow
+Flask
+pywebview
