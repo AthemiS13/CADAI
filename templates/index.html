@@ -385,11 +385,18 @@
             const text = ui.promptInput.value.trim();
             if(!text && attachedFiles.length === 0) return;
 
+            // update text to include attachments so it gets saved to the session DB and shown in UI
+            let promptText = text;
+            if (attachedFiles.length > 0) {
+                const names = attachedFiles.map(f => typeof f === 'string' ? f.split('\\\\').pop().split('/').pop() : f.name).join(', ');
+                promptText = text ? `${text}\n\n*(Attached: ${names})*` : `*(Attached: ${names})*`;
+            }
+
             ui.promptInput.value = '';
             ui.thinkingLine.style.display = 'block';
             isGenerating = true;
 
-            appendMessageToUI('user', text, new Date());
+            appendMessageToUI('user', promptText, new Date());
             
             // Create a placeholder for AI streaming
             const aiDiv = document.createElement('div');
@@ -484,12 +491,17 @@
                 const files = await window.pywebview.api.open_file_dialog();
                 if (files && files.length > 0) {
                     attachedFiles.push(...files);
-                    ui.attachmentsContainer.innerHTML = `Attached: ${attachedFiles.map(f => f.split('\\').pop()).join(', ')}`;
+                    updateAttachmentsUI();
                 }
             } else {
                 alert("File dialog requires PyWebView context.");
             }
         };
+
+        function updateAttachmentsUI() {
+            const names = attachedFiles.map(f => typeof f === 'string' ? f.split('\\\\').pop().split('/').pop() : f.name);
+            ui.attachmentsContainer.innerHTML = names.length > 0 ? `Attached: ${names.join(', ')}` : '';
+        }
 
         document.getElementById('browse-script-btn').onclick = async () => {
             if (window.pywebview) {
@@ -511,11 +523,42 @@
                 for (const file of e.dataTransfer.files) {
                     if (file.path) {
                         attachedFiles.push(file.path);
-                    } else if (file.name) {
-                        attachedFiles.push(file.name);
+                    } else {
+                        // fallback for browsers/environments without file.path
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            attachedFiles.push({
+                                type: 'base64',
+                                name: file.name,
+                                data: event.target.result
+                            });
+                            updateAttachmentsUI();
+                        };
+                        reader.readAsDataURL(file);
                     }
                 }
-                ui.attachmentsContainer.innerHTML = `Attached: ${attachedFiles.map(f => f.split('\\\\').pop()).join(', ')}`;
+                updateAttachmentsUI();
+            }
+        });
+
+        // Paste support for images
+        window.addEventListener('paste', (e) => {
+            if (!e.clipboardData) return;
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        attachedFiles.push({
+                            type: 'base64',
+                            name: 'pasted_image.png',
+                            data: event.target.result
+                        });
+                        updateAttachmentsUI();
+                    };
+                    reader.readAsDataURL(blob);
+                }
             }
         });
 

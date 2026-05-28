@@ -12,6 +12,16 @@ CADAI is a highly tailored, standalone desktop AI assistant specifically designe
 - **Advanced UI Aesthetics**: CADAI runs via `pywebview` utilizing a heavily customized, dark-themed HTML/CSS/JS frontend powered by Tailwind, giving it a premium glass-morphic feel designed explicitly for desktop setups.
 - **Optimized for Fusion 360 API**: The backend actively trains the AI with a strictly curated set of rules tailored to the Autodesk Fusion 360 API architecture, avoiding common pitfalls like parametric modeling setup issues or internal unit conversion failures.
 
+## Capabilities Showcase
+
+Just drag and drop a schematic or PDF into the chat, and the AI will automatically parse the dimensions and constraints to generate the exact parametric CAD model directly in Fusion 360.
+
+**Prompt**: *"design the attached cell"*
+
+|<img src="assets/input.png" width="400" />|<img src="assets/result.png" width="400" />|
+|:---:|:---:|
+|**Input (Schematic)**|**Result (Fusion 360 Body)**|
+
 ## Architecture
 
 CADAI operates as a local hybrid desktop application:

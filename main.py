@@ -147,20 +147,31 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
 """
             user_parts = []
             
-            for file_path in files:
-                path = Path(file_path)
-                if not path.exists(): continue
-                ext = path.suffix.lower()
-                if ext == '.txt':
-                    with open(path, 'r', encoding='utf-8') as f:
-                        user_parts.append(f"--- File: {path.name} ---\n{f.read()}")
-                elif ext == '.pdf':
-                    doc = fitz.open(path)
-                    text = "".join([page.get_text() for page in doc])
-                    user_parts.append(f"--- File (PDF): {path.name} ---\n{text}")
-                elif ext in ['.png', '.jpg', '.jpeg']:
-                    img = Image.open(path)
-                    user_parts.append(img)
+            for file_info in files:
+                if isinstance(file_info, str):
+                    path = Path(file_info)
+                    if not path.exists(): continue
+                    ext = path.suffix.lower()
+                    if ext == '.txt':
+                        with open(path, 'r', encoding='utf-8') as f:
+                            user_parts.append(f"--- File: {path.name} ---\n{f.read()}")
+                    elif ext == '.pdf':
+                        with open(path, "rb") as f:
+                            pdf_bytes = f.read()
+                        pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+                        user_parts.append({"mimeType": "application/pdf", "data": pdf_b64})
+                    elif ext in ['.png', '.jpg', '.jpeg']:
+                        img = Image.open(path)
+                        user_parts.append(img)
+                elif isinstance(file_info, dict) and file_info.get("type") == "base64":
+                    b64_data = file_info.get("data", "")
+                    if "," in b64_data:
+                        header, encoded = b64_data.split(",", 1)
+                        mime_type = header.split(":")[1].split(";")[0]
+                    else:
+                        encoded = b64_data
+                        mime_type = "image/png"
+                    user_parts.append({"mimeType": mime_type, "data": encoded})
             
             user_parts.append(prompt)
             
@@ -183,6 +194,8 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
             for part in user_parts:
                 if isinstance(part, str):
                     current_turn["parts"].append({"text": part})
+                elif isinstance(part, dict):
+                    current_turn["parts"].append({"inlineData": part})
                 elif hasattr(part, 'tobytes'):
                     buffered = BytesIO()
                     if part.mode in ("RGBA", "P"):
@@ -190,8 +203,8 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
                     part.save(buffered, format="JPEG")
                     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
                     current_turn["parts"].append({
-                        "inline_data": {
-                            "mime_type": "image/jpeg",
+                        "inlineData": {
+                            "mimeType": "image/jpeg",
                             "data": img_str
                         }
                     })
