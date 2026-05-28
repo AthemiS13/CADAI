@@ -61,6 +61,8 @@ class WebApi:
         return result[0] if result else None
 
 api = WebApi()
+ACTIVE_SESSION_ID = None
+MAIN_WINDOW = None
 
 @app.route('/')
 def index():
@@ -90,9 +92,12 @@ def delete_session(session_id):
 
 @app.route('/api/sessions/<session_id>/activate', methods=['POST'])
 def activate_session(session_id):
+    global ACTIVE_SESSION_ID
     session = session_manager.get_session(session_id)
     if not session:
         return jsonify({"error": "Session not found"}), 404
+    
+    ACTIVE_SESSION_ID = session_id
     
     config = load_config()
     script_path = config.get("script_path", "")
@@ -109,11 +114,13 @@ def activate_session(session_id):
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    global ACTIVE_SESSION_ID
     data = request.json
     session_id = data.get("session_id")
     prompt = data.get("prompt")
     files = data.get("files", [])
     
+    ACTIVE_SESSION_ID = session_id
     api_key = keyring.get_password(KEYRING_SERVICE, KEYRING_KEY_NAME)
     if not api_key:
         return jsonify({"error": "API Key not set"}), 400
@@ -134,7 +141,15 @@ def chat():
             system_instruction = """SYSTEM INSTRUCTION: You are an expert Python Developer specializing in Autodesk Fusion 360 API integrations.
 CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
 1. CODE FORMAT: Output ONLY valid Python code wrapped in the standard `def run(context):` boilerplate. Do NOT include explanations outside the code block.
-2. ERROR HANDLING: Always include proper `try...except` block catching exceptions and displaying them via `ui.messageBox('Failed:\\n{}'.format(traceback.format_exc()))`.
+2. ERROR HANDLING: The code MUST include a robust `try...except` block. Inside the except block, you MUST send the traceback to the local CADAI server for auto-healing. Use this EXACT block at the end of your run function:
+    except Exception as e:
+        err_msg = 'Failed:\\n{}'.format(traceback.format_exc())
+        if ui: ui.messageBox('CADAI AUTO-HEAL INITIATED:\\n' + err_msg)
+        try:
+            import urllib.request, json
+            req = urllib.request.Request('http://127.0.0.1:5000/api/auto_heal', data=json.dumps({"error": err_msg}).encode('utf-8'), headers={'Content-Type': 'application/json'})
+            urllib.request.urlopen(req, timeout=2)
+        except: pass
 3. DOCUMENTS & COMPONENTS: If creating multiple components, ALWAYS create a new Parametric Design Document first to avoid "Part Design documents can only contain one component" errors. Use this exact snippet:
     doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
     design = app.activeProduct
@@ -147,6 +162,7 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
 8. ROBUSTNESS: Keep your parametric math simple. If creating complex profiles like involute gears, prefer standard extrusions and circular patterns over complex loft/sweep operations which are prone to topological failures.
 9. RECTANGLES: `SketchCurves` does NOT have a `sketchRectangles` property. To draw rectangles, always use `sketch.sketchCurves.sketchLines.addTwoPointRectangle(pt1, pt2)` or `sketch.sketchCurves.sketchLines.addCenterPointRectangle(centerPt, cornerPt)`.
 10. LINE GEOMETRY: `Line3D` objects (e.g., from `edge.geometry`) do NOT have a `direction` attribute. If you need the vector/direction of an edge, evaluate it using its `startPoint` and `endPoint`.
+11. ROOT COMPONENT: NEVER attempt to change or set the `name` property of the `rootComponent` (e.g. `root.name = "..."`). This is strictly forbidden in the Fusion 360 API and throws a RuntimeError.
 """
             user_parts = []
             
@@ -266,6 +282,27 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
             
     return Response(stream_with_context(generate()), mimetype='text/plain')
 
+@app.route('/api/auto_heal', methods=['POST'])
+def auto_heal():
+    global ACTIVE_SESSION_ID
+    if not ACTIVE_SESSION_ID:
+        return jsonify({"error": "No active session"}), 400
+        
+    data = request.json
+    error_msg = data.get('error', '')
+    
+    prompt = f"The script you just generated threw this exact error in Fusion 360:\n```\n{error_msg}\n```\nPlease thoroughly analyze this error and provide the fully corrected Python script."
+    
+    if MAIN_WINDOW:
+        import json
+        js_code = f"document.getElementById('prompt-input').value = {json.dumps(prompt)}; sendMessage();"
+        try:
+            MAIN_WINDOW.evaluate_js(js_code)
+        except:
+            pass
+        
+    return jsonify({"success": True, "message": "Auto-heal triggered"})
+
 @app.route('/api/settings', methods=['GET', 'POST'])
 def handle_settings():
     if request.method == 'POST':
@@ -295,5 +332,5 @@ def run_server():
 if __name__ == '__main__':
     t = threading.Thread(target=run_server, daemon=True)
     t.start()
-    webview.create_window('CADAI - Fusion 360 AI Assistant', 'http://127.0.0.1:5000', js_api=api, width=1200, height=800, text_select=True)
+    MAIN_WINDOW = webview.create_window('CADAI - Fusion 360 AI Assistant', 'http://127.0.0.1:5000', js_api=api, width=1200, height=800, text_select=True)
     webview.start()
