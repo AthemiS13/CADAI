@@ -6,7 +6,7 @@ CADAI is a highly tailored, standalone desktop AI assistant specifically designe
 
 ## Watch it in action
 
-[▶️ Click here to watch the full CADAI Demo Video](assets/CADAI_DEMO.mov)
+https://github.com/user-attachments/assets/fd6d8c83-19cd-409d-ab7a-2b00d9b4d0fd
 
 ## Features
 
