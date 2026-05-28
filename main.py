@@ -145,6 +145,8 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
 6. OBJECT COLLECTIONS: Always use `adsk.core.ObjectCollection.create()` when passing multiple profiles or bodies into a feature operation.
 7. EXTRUSION EXTENTS: When using `setDistanceExtent()` on an extrude input, it ALWAYS requires two arguments: a boolean for symmetry, and the ValueInput distance (e.g. `ext_input.setDistanceExtent(False, adsk.core.ValueInput.createByReal(thickness))`).
 8. ROBUSTNESS: Keep your parametric math simple. If creating complex profiles like involute gears, prefer standard extrusions and circular patterns over complex loft/sweep operations which are prone to topological failures.
+9. RECTANGLES: `SketchCurves` does NOT have a `sketchRectangles` property. To draw rectangles, always use `sketch.sketchCurves.sketchLines.addTwoPointRectangle(pt1, pt2)` or `sketch.sketchCurves.sketchLines.addCenterPointRectangle(centerPt, cornerPt)`.
+10. LINE GEOMETRY: `Line3D` objects (e.g., from `edge.geometry`) do NOT have a `direction` attribute. If you need the vector/direction of an edge, evaluate it using its `startPoint` and `endPoint`.
 """
             user_parts = []
             
@@ -217,7 +219,10 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
             
             full_response = ""
             if response.status_code != 200:
-                yield f"\n\nAPI Error {response.status_code}: {response.text}"
+                error_text = f"\n\nAPI Error {response.status_code}: {response.text}"
+                full_response += error_text
+                yield error_text
+                session_manager.add_message(session_id, "model", full_response)
                 return
 
             for line in response.iter_lines():
@@ -237,6 +242,7 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
                             pass
                 
             # Save model message to session
+
             session_manager.add_message(session_id, "model", full_response)
             
             # Extract code and save it
@@ -253,9 +259,10 @@ CRITICAL RULES AND BEST PRACTICES FOR FUSION 360 API:
                         f.write(code)
 
         except Exception as e:
-            err_msg = f"Backend Error: {str(e)}\n\n```text\n{traceback.format_exc()}\n```"
-            session_manager.add_message(session_id, "model", err_msg)
-            yield f"\n\n{err_msg}"
+            error_text = f"\n\nError: {str(e)}"
+            full_response += error_text
+            yield error_text
+            session_manager.add_message(session_id, "model", full_response)
             
     return Response(stream_with_context(generate()), mimetype='text/plain')
 
